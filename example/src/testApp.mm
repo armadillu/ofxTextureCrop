@@ -28,7 +28,6 @@ void testApp::draw(){
 
 
 void testApp::touchMoved(ofTouchEventArgs &touch){
-
 	pos.x = touch.x * 1.4 - 200;
 	pos.y = touch.y * 1.4 - 200;
 }

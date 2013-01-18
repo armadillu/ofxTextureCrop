@@ -9,8 +9,13 @@
 #ifndef emptyExample_CropTexture_h
 #define emptyExample_CropTexture_h
 
-
 #include "ofMain.h"
+
+
+#if ( OF_VERSION == 6 ) // OF pre007 no bueno
+#error This Addon requires at least OF_007
+#endif
+
 
 class ofxCropTexture: public ofTexture{
 
