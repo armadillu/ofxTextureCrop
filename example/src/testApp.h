@@ -18,7 +18,7 @@ public:
 	void touchDoubleTap(ofTouchEventArgs &touch){};
 	void touchCancelled(ofTouchEventArgs &touch){};
 
-	ofxCropTexture * tex;
+	ofTexture * tex;
 	ofVec2f pos;
 };
 
