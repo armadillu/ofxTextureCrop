@@ -11,55 +11,62 @@
 #include "ofTexture.h"
 
 
-ofxCropTexture& ofxCropTexture::operator=(const ofTexture & mom){
-	//release(texData.textureID);
-	anchor = ofPoint();
-	bAnchorIsPct = true;
-	texData = mom.texData;
-	//retain(texData.textureID);
-	return *this;
+ofRectangle ofxCropTexture::getIntersection(const ofRectangle & r1, const ofRectangle & r2){
+
+	if( ofGetRectMode() == OF_RECTMODE_CORNER){
+		return r1.getIntersection(r2);
+	}else{
+
+		ofRectangle rect0 = r1;
+		ofRectangle rect1 = r2;
+
+		rect0.x -= rect0.width * 0.5;
+		rect0.y -= rect0.height * 0.5;
+		rect1.x -= rect1.width * 0.5;
+		rect1.y -= rect1.height * 0.5;
+
+		ofRectangle result = rect0.getIntersection(rect1);
+
+		result.x += result.width * 0.5;
+		result.y += result.height * 0.5;
+
+		return result;
+	}
 }
 
 
 void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, ofRectangle bounds, bool debug){
 
-	ofRectangle tex = ofRectangle(x,y,w,h);
-	ofRectangle intersection = bounds.getIntersection(tex);
-	ofRectangle offset = ofRectangle( x, y, bounds.x - x, bounds.y - y );
-
-	float sx = texData.width / w;
-	float sy = texData.height / h;
-
-	ofVec2f min, max;
-
-	if(offset.width>0){
-		min.x = -offset.width;
-	}else{
-		min.x = 0;
-	}
-	max.x = intersection.width;
-
-	if(offset.height>0){
-		min.y = -offset.height;
-	}else{
-		min.y = 0;
-	}
-	max.y = intersection.height ;
-
-
-	if(debug){
-		ofSetColor(255,96);
+	if(debug){ //draw the whole texture as if no bounds were defined
+		ofSetColor(255,64);
 		draw(x, y, w, h);
 		ofSetColor(255);
+	}
+
+	ofRectangle tex = ofRectangle(x,y,w,h);
+	ofRectangle intersection = getIntersection(bounds,tex);
+	ofRectangle texCoordsCrop;
+
+	float signW = texData.width / w; // w and h already include negative values, so it handles the mirroring "automatically"
+	float signH = texData.height / h;
+	texCoordsCrop.width = (intersection.width);
+	texCoordsCrop.height = (intersection.height);
+
+	if ( ofGetRectMode() == OF_RECTMODE_CORNER){
+		texCoordsCrop.x = intersection.x - tex.x;
+		texCoordsCrop.y = intersection.y - tex.y;
+	}else{
+		texCoordsCrop.x = intersection.x - tex.x + tex.width/2 - intersection.width/2;
+		texCoordsCrop.y = intersection.y - tex.y + tex.height/2 - intersection.height/2;
 	}
 
 	drawSubsection(
 				   intersection.x, intersection.y,
 				   intersection.width, intersection.height,
-				   -min.x * sx ,
-				   -min.y * sx,
-				   max.x * sx,
-				   max.y * sy
+				   signW * texCoordsCrop.x ,
+				   signH * texCoordsCrop.y,
+				   signW * texCoordsCrop.width,
+				   signH * texCoordsCrop.height
 				   );
 
 	if(debug){
@@ -74,16 +81,27 @@ void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, ofRect
 		ofSetColor(0, 255, 0);
 		ofRect(intersection);
 
-		ofSetColor(255, 255, 0);
-		ofRect(offset);
+		ofPushMatrix();
+			if ( ofGetRectMode() == OF_RECTMODE_CORNER){
+				ofTranslate(tex.x, tex.y);
+			}else{
+				ofTranslate(tex.x - w/2 + intersection.width/2, tex.y - h/2 + intersection.height/2);
+			}
+			ofSetColor(255);
+			ofRect(texCoordsCrop);
+		ofPopMatrix();
 
 		ofFill();
-//		ofDrawBitmapString( ofToString(min.x) + ", " + ofToString(min.y) + ", " + ofToString(max.x) + ", " + ofToString(max.x), bounds.x + 5, bounds.y - 5 );
+		ofDrawBitmapString(
+							ofToString(texCoordsCrop.x,0) + ", " + ofToString(texCoordsCrop.y,0) + ", " +
+							ofToString(texCoordsCrop.width,0) + ", " + ofToString(texCoordsCrop.height,0),
+							tex.x + 5, tex.y - 5
+						   );
 		ofSetColor(255);
 	}
 }
 
-#if ( OF_VERSION == 7 ) && (OF_VERSION_MINOR == 0) //OF_0070 doesnt have drawSubsection
+#if ( OF_VERSION == 7 ) && (OF_VERSION_MINOR == 0) //OF_0070 doesnt have drawSubsection, so I took the implementation from newer versions...
 
 
 //------------------------------------

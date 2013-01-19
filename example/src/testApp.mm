@@ -1,7 +1,10 @@
 #include "testApp.h"
 
 
-void testApp::setup(){	
+void testApp::setup(){
+
+	//ofxiPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
+
 	// register touch events
 	ofRegisterTouchEvents(this);
 		
@@ -13,24 +16,63 @@ void testApp::setup(){
 	
 	tex = new ofTexture();
 	ofLoadImage( *tex, "tex.png" );
+
+	//ofSetRectMode(OF_RECTMODE_CENTER);
 }
 
 
 void testApp::draw(){
 
+	//define a rect where our texture drawing will be constrained into
+	int inset = 300;
+	ofRectangle bounds = ofRectangle(
+									 inset,
+									 inset,
+									 ofGetWidth() - 2 * inset,
+									 ofGetHeight() - 2 * inset
+									 );
+
+	//draw our texture, constraining  the drawing to only inside the bounds
+
 	ofSetColor(255);
-	int off = 200;
+	((ofxCropTexture *)tex)->drawInsideBounds(
+												pos.x,						//draw position x
+												pos.y,						//draw position y
+												tex->getWidth(),			//texture width, can be negative too
+												tex->getHeight(),			//tex height, can be negative too
+												bounds,						//crop all your drawing into this rect
+												true						//debug
+											   );
 
-	((ofxCropTexture *)tex)->drawInsideBounds(	pos.x, pos.y,
-							tex->getWidth() * 0.6, tex->getHeight() * 0.6,
-							ofRectangle(off,off, ofGetWidth() - 2 * off, ofGetHeight() - 2 * off),
-							true
-						  );
 
+	//draw current "rect mode"
+	ofSetColor(255);
+	ofDrawBitmapString( (ofGetRectMode() == OF_RECTMODE_CORNER ) ? "OF_RECTMODE_CORNER" : "OF_RECTMODE_CENTER",
+						20,
+						20
+					   );
+
+	//draw bounds
+	glLineWidth(3);
+	ofSetColor(255, 0, 0);
+	ofNoFill();
+	ofRect(bounds);
+	ofFill();
+	glLineWidth(1);
 }
 
 
 void testApp::touchMoved(ofTouchEventArgs &touch){
-	pos.x = touch.x * 1.4 - 200;
-	pos.y = touch.y * 1.4 - 200;
+	pos.x = touch.x * 1.5 - ofGetWidth() * 0.5;
+	pos.y = touch.y * 1.5 - ofGetHeight() * 0.5;
+}
+
+
+void testApp::touchDoubleTap(ofTouchEventArgs &touch){
+
+	if ( ofGetRectMode() == OF_RECTMODE_CORNER ){
+		ofSetRectMode(OF_RECTMODE_CENTER);
+	}else{
+		ofSetRectMode(OF_RECTMODE_CORNER);
+	}
 }

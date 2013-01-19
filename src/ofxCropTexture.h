@@ -17,13 +17,19 @@
 #error This Addon requires at least OF_007
 #endif
 
+
 class ofxCropTexture: public ofTexture{
 
 	public:
 
-		ofxCropTexture& operator=(const ofTexture & mom);
 
-		void drawInsideBounds(float x, float y, float w, float h, ofRectangle bounds = ofRectangle(0,0, ofGetWidth(), ofGetHeight()), bool debug = false);
+		void drawInsideBounds(
+							  float x, float y, float w, float h,
+							  ofRectangle bounds = ofRectangle(0,0, ofGetWidth(), ofGetHeight()),
+							  bool debug = false
+							  );
+
+		static ofRectangle getIntersection(const ofRectangle & r1, const ofRectangle & r2);
 
 	#if ( OF_VERSION == 7 ) && (OF_VERSION_MINOR == 0) //OF_0070 doesnt have drawSubsection
 		void drawSubsection(float x, float y, float w, float h, float sx, float sy);
