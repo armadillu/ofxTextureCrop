@@ -25,7 +25,7 @@ class ofxCropTexture: public ofTexture{
 
 		void drawInsideBounds(
 							  float x, float y, float w, float h,
-							  ofRectangle bounds = ofRectangle(0,0, ofGetWidth(), ofGetHeight()),
+							  const ofRectangle & bounds = ( ofGetRectMode() == OF_RECTMODE_CORNER) ? ofRectangle( 0.0f, 0.0f, ofGetWidth(), ofGetHeight() ) : ofRectangle( ofGetWidth() * 0.5f, ofGetHeight() * 0.5f, ofGetWidth(), ofGetHeight() ),
 							  bool debug = false
 							  );
 

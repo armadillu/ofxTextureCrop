@@ -33,16 +33,20 @@ void testApp::draw(){
 									 );
 
 	//draw our texture, constraining  the drawing to only inside the bounds
+	float sx = 1.5 * sinf(ofGetElapsedTimef());
+	float sy = 1.5 * sinf( 0.5 * ofGetElapsedTimef());
 
 	ofSetColor(255);
 	((ofxCropTexture *)tex)->drawInsideBounds(
 												pos.x,						//draw position x
 												pos.y,						//draw position y
-												tex->getWidth(),			//texture width, can be negative too
-												tex->getHeight(),			//tex height, can be negative too
+												sx * tex->getWidth(),		//texture width, can be negative too
+												sy * tex->getHeight(),		//tex height, can be negative too
 												bounds,						//crop all your drawing into this rect
 												true						//debug
 											   );
+
+	
 
 
 	//draw current "rect mode"

@@ -35,7 +35,7 @@ ofRectangle ofxCropTexture::getIntersection(const ofRectangle & r1, const ofRect
 }
 
 
-void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, ofRectangle bounds, bool debug){
+void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, const ofRectangle & bounds, bool debug){
 
 	if(debug){ //draw the whole texture as if no bounds were defined
 		ofSetColor(255,64);
@@ -45,6 +45,12 @@ void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, ofRect
 
 	ofRectangle tex = ofRectangle(x,y,w,h);
 	ofRectangle intersection = getIntersection(bounds,tex);
+
+	if (intersection.width == 0.0f && intersection.height == 0.0f){
+		//printf("no need to draw!\n");
+		return;
+	}
+	
 	ofRectangle texCoordsCrop;
 
 	float signW = texData.width / w; // w and h already include negative values, so it handles the mirroring "automatically"
