@@ -3,11 +3,6 @@
 
 void testApp::setup(){
 
-	//ofxiPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
-
-	// register touch events
-	ofRegisterTouchEvents(this);
-		
 	ofBackground(0,0,0);
 	ofEnableAlphaBlending();
 
@@ -23,6 +18,9 @@ void testApp::setup(){
 
 void testApp::draw(){
 
+	pos.x = ofGetMouseX();
+	pos.y = ofGetMouseY();
+
 	//define a rect where our texture drawing will be constrained into
 	int inset = 300;
 	ofRectangle bounds = ofRectangle(
@@ -37,7 +35,7 @@ void testApp::draw(){
 	float sy = 1.5 * sinf( 0.5 * ofGetElapsedTimef());
 
 	ofSetColor(255);
-	((ofxCropTexture *)tex)->drawInsideBounds(
+	drawTextureCropInsideRect(tex,
 												pos.x,						//draw position x
 												pos.y,						//draw position y
 												sx * tex->getWidth(),		//texture width, can be negative too
@@ -63,20 +61,4 @@ void testApp::draw(){
 	ofRect(bounds);
 	ofFill();
 	glLineWidth(1);
-}
-
-
-void testApp::touchMoved(ofTouchEventArgs &touch){
-	pos.x = touch.x * 1.5 - ofGetWidth() * 0.5;
-	pos.y = touch.y * 1.5 - ofGetHeight() * 0.5;
-}
-
-
-void testApp::touchDoubleTap(ofTouchEventArgs &touch){
-
-	if ( ofGetRectMode() == OF_RECTMODE_CORNER ){
-		ofSetRectMode(OF_RECTMODE_CENTER);
-	}else{
-		ofSetRectMode(OF_RECTMODE_CORNER);
-	}
 }

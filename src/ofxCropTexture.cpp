@@ -8,10 +8,9 @@
 //
 
 #include "ofxCropTexture.h"
-#include "ofTexture.h"
 
 
-ofRectangle ofxCropTexture::getIntersection(const ofRectangle & r1, const ofRectangle & r2){
+ofRectangle getIntersection(const ofRectangle & r1, const ofRectangle & r2){
 
 	if( ofGetRectMode() == OF_RECTMODE_CORNER){
 		return r1.getIntersection(r2);
@@ -35,11 +34,14 @@ ofRectangle ofxCropTexture::getIntersection(const ofRectangle & r1, const ofRect
 }
 
 
-void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, const ofRectangle & bounds, bool debug){
+void drawTextureCropInsideRect(ofTexture * texture,
+					  float x, float y, float w, float h,
+					  const ofRectangle & bounds,
+					  bool debug){
 
 	if(debug){ //draw the whole texture as if no bounds were defined
 		ofSetColor(255,64);
-		draw(x, y, w, h);
+		texture->draw(x, y, w, h);
 		ofSetColor(255);
 	}
 
@@ -53,8 +55,8 @@ void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, const 
 	
 	ofRectangle texCoordsCrop;
 
-	float signW = texData.width / w; // w and h already include negative values, so it handles the mirroring "automatically"
-	float signH = texData.height / h;
+	float signW = texture->texData.width / w; // w and h already include negative values, so it handles the mirroring "automatically"
+	float signH = texture->texData.height / h;
 	texCoordsCrop.width = (intersection.width);
 	texCoordsCrop.height = (intersection.height);
 
@@ -66,7 +68,7 @@ void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, const 
 		texCoordsCrop.y = intersection.y - tex.y + tex.height/2 - intersection.height/2;
 	}
 
-	drawSubsection(
+	texture->drawSubsection(
 				   intersection.x, intersection.y,
 				   intersection.width, intersection.height,
 				   signW * texCoordsCrop.x ,
@@ -111,23 +113,23 @@ void ofxCropTexture::drawInsideBounds(float x, float y, float w, float h, const 
 
 
 //------------------------------------
-void ofxCropTexture::drawSubsection(float x, float y, float w, float h, float sx, float sy){
+void drawSubsection(float x, float y, float w, float h, float sx, float sy){
 	drawSubsection(x,y,0,w,h,sx,sy,w,h);
 }
 
 //------------------------------------
-void ofxCropTexture::drawSubsection(float x, float y, float w, float h, float sx, float sy, float _sw, float _sh){
+void drawSubsection(float x, float y, float w, float h, float sx, float sy, float _sw, float _sh){
 	drawSubsection(x,y,0,w,h,sx,sy,_sw,_sh);
 }
 
 //------------------------------------
-void ofxCropTexture::drawSubsection(float x, float y, float z, float w, float h, float sx, float sy){
+void drawSubsection(float x, float y, float z, float w, float h, float sx, float sy){
 	drawSubsection(x,y,z,w,h,sx,sy,w,h);
 }
 
 
 //----------------------------------------------------------
-void ofxCropTexture::drawSubsection(float x, float y, float z, float w, float h, float sx, float sy, float sw, float sh) {
+void drawSubsection(float x, float y, float z, float w, float h, float sx, float sy, float sw, float sh) {
 
 	// make sure we are on unit 0 - we may change this when setting shader samplers
 	// before glEnable or else the shader gets confused
