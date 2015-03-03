@@ -33,6 +33,17 @@ ofRectangle getIntersection(const ofRectangle & r1, const ofRectangle & r2){
 	}
 }
 
+void drawTextureCropInsideRect(ofTexture * tex,
+							   const ofRectangle & texRect,
+							   const ofRectangle & bounds,
+							   bool debug){
+
+	drawTextureCropInsideRect(tex,
+							  texRect.x, texRect.y,
+							  texRect.width, texRect.height,
+							  bounds, debug);
+}
+
 
 void drawTextureCropInsideRect(ofTexture * texture,
 					  float x, float y, float w, float h,
